@@ -10,7 +10,6 @@ CREATE TABLE lecture (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,      -- 강의 ID (기본 키)
     max_capacity INT NOT NULL,                 -- 최대 정원
     current_capacity INT NOT NULL,             -- 현재 정원
-    version INT NOT NULL,                      -- 낙관적 락을 위한 버전 관리
     title VARCHAR(255) NOT NULL,               -- 강의 제목
     lecturer_id BIGINT NOT NULL,               -- 강의자 ID (member 테이블 참조)
     start_time DATETIME NOT NULL,              -- 강의 시작 시간

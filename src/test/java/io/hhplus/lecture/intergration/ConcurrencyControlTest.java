@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -39,7 +40,7 @@ public class ConcurrencyControlTest {
             .withDatabaseName("lecture_db")
             .withUsername("lecture_user")
             .withPassword("lecture_pass")
-            .withInitScripts("schema.sql", "data.sql");
+            .withInitScripts("schema.sql");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -60,8 +61,10 @@ public class ConcurrencyControlTest {
     }
 
     @Test
-    void 동시에_여러_수강신청시_정확한_수강인원이_반영된다() throws InterruptedException {
-        int threadCount = 30;
+    @Sql(scripts = {"/data.sql"})
+    void 최대_수강_인원보다_많은_수의_신청이_들어_왔을_때_최대_수강_인원까지만_신청_된다() throws InterruptedException {
+        // given
+        int threadCount = 40;
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -69,6 +72,7 @@ public class ConcurrencyControlTest {
         AtomicInteger attendeeId = new AtomicInteger(2);
         AtomicInteger countSuccess = new AtomicInteger(0);
 
+        // when
         for (int i = 0; i < threadCount; i++) {
             executor.execute(() -> {
                 try {
@@ -82,11 +86,44 @@ public class ConcurrencyControlTest {
         latch.await();
         executor.shutdown();
 
+        // then
         Lecture lecture = lectureRepository.findById(lectureId);
         List<Registration> registrations = registrationRepository.findByLectureIdAndStatus(lectureId, RegistrationStatus.COMPLETED);
 
-        assertThat(registrations.size()).isEqualTo(countSuccess.get());
-        assertThat(lecture.getCurrentCapacity()).isEqualTo(countSuccess.get());
+        assertThat(lecture.getCurrentCapacity()).isEqualTo(lecture.getMaxCapacity());
+        assertThat(registrations.size()).isEqualTo(lecture.getMaxCapacity());
+    }
+
+    @Test
+    @Sql(scripts = {"/data.sql"})
+    void 동시에_같은_참석자가_여러_번의_신청을_보내도_한_건만_처리된다() throws InterruptedException {
+        // given
+        int threadCount = 5;
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        CountDownLatch latch = new CountDownLatch(threadCount);
+
+        long lectureId = 1;
+        long attendeeId = 2;
+
+        // when
+        for (int i = 0; i < threadCount; i++) {
+            executor.execute(() -> {
+                try {
+                    registrationService.register(lectureId,  attendeeId);
+                } finally {
+                    latch.countDown();
+                }
+            });
+        }
+        latch.await();
+        executor.shutdown();
+
+        // then
+        Lecture lecture = lectureRepository.findById(lectureId);
+        List<Registration> registrations = registrationRepository.findByLectureIdAndStatus(lectureId, RegistrationStatus.COMPLETED);
+
+        assertThat(registrations.size()).isEqualTo(1);
+        assertThat(lecture.getCurrentCapacity()).isEqualTo(1);
     }
 
 }
