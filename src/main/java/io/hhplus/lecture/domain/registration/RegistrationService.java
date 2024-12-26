@@ -22,7 +22,7 @@ public class RegistrationService {
 
     @Transactional
     public RegistrationDetailDto register(long lectureId, long attendeeId) {
-        Lecture lecture = lectureRepository.findById(lectureId);
+        Lecture lecture = lectureRepository.findByIdWithLock(lectureId);
         Member attendee = memberRepository.findById(attendeeId);
 
         // validation

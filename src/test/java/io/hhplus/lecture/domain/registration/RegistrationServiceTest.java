@@ -86,7 +86,7 @@ public class RegistrationServiceTest {
 
             when(memberRepository.findById(Mocks.attendeeId))
                     .thenReturn(Mocks.attendee);
-            when(lectureRepository.findById(Mocks.lectureId))
+            when(lectureRepository.findByIdWithLock(Mocks.lectureId))
                     .thenReturn(pastRecruitedLecture);
 
             // when & then
@@ -107,7 +107,7 @@ public class RegistrationServiceTest {
 
             when(memberRepository.findById(Mocks.attendeeId))
                     .thenReturn(Mocks.attendee);
-            when(lectureRepository.findById(Mocks.lectureId))
+            when(lectureRepository.findByIdWithLock(Mocks.lectureId))
                     .thenReturn(currentRecruitingLecture);
 
             // when & then
@@ -145,7 +145,7 @@ public class RegistrationServiceTest {
 
             when(memberRepository.findById(Mocks.attendeeId))
                     .thenReturn(Mocks.attendee);
-            when(lectureRepository.findById(Mocks.lectureId))
+            when(lectureRepository.findByIdWithLock(Mocks.lectureId))
                     .thenReturn(currentRecruitingLecture);
 
             // when

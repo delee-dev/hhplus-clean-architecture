@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface LectureRepository {
     Lecture findById(long id);
+    Lecture findByIdWithLock(Long id);
     List<Lecture> findLecturesInRecruitmentPeriod(LocalDateTime localDateTime);
     Lecture update(Lecture lecture);
 }

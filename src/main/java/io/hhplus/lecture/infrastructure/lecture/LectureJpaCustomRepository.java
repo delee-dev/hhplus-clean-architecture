@@ -20,6 +20,11 @@ public class LectureJpaCustomRepository implements LectureRepository {
     }
 
     @Override
+    public Lecture findByIdWithLock(Long id) {
+        return lectureJpaRepository.findLectureById(id).orElseThrow(() -> new NoSuchElementException("해당 id를 가진 특강이 존재하지 않습니다."));
+    }
+
+    @Override
     public List<Lecture> findLecturesInRecruitmentPeriod(LocalDateTime searchTime) {
         return lectureJpaRepository.findLecturesInRecruitmentPeriod(searchTime);
     }
