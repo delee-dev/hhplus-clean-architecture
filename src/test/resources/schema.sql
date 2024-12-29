@@ -16,7 +16,6 @@ CREATE TABLE lecture (
     end_time DATETIME NOT NULL,                -- 강의 종료 시간
     recruitment_start_time DATETIME NOT NULL,  -- 모집 시작 시간
     recruitment_end_time DATETIME NOT NULL,    -- 모집 종료 시간
-    FOREIGN KEY (lecturer_id) REFERENCES member(id) ON DELETE CASCADE -- 외래 키 제약 조건
 );
 
 -- 3. `registration` 테이블: 등록 정보를 저장
@@ -26,6 +25,4 @@ CREATE TABLE registration (
     lecture_id BIGINT NOT NULL,                -- 강의 ID (lecture 테이블 참조)
     status ENUM('COMPLETED', 'CANCELED') NOT NULL, -- 등록 상태 (COMPLETED 또는 CANCELED)
     created_at DATETIME NOT NULL,              -- 등록 생성 시간
-    FOREIGN KEY (attendee_id) REFERENCES member(id) ON DELETE CASCADE, -- 외래 키 제약 조건
-    FOREIGN KEY (lecture_id) REFERENCES lecture(id) ON DELETE CASCADE -- 외래 키 제약 조건
 );

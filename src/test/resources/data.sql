@@ -48,12 +48,23 @@ INSERT INTO member (id, name, role) VALUES
 
 
 INSERT INTO lecture (
-    id, max_capacity, current_capacity,
-    title, lecturer_id,
-    start_time, end_time,
-    recruitment_start_time, recruitment_end_time
-) VALUES
-    (1, 30, 0,
-     'TDD & 클린아키텍처', 1,
-     '2090-12-31 09:00:00', '2090-12-31 11:00:00',
-     '2024-12-25 00:00:00', '2090-12-25 23:59:59');
+    id,
+    max_capacity,
+    current_capacity,
+    title,
+    lecturer_id,
+    start_time,
+    end_time,
+    recruitment_start_time,
+    recruitment_end_time
+) VALUES(
+     1,
+     30,
+     0,
+     'TDD & 클린아키텍처',
+     1,
+     '2090-12-31 09:00:00',
+     '2090-12-31 11:00:00',
+     '2024-12-25 00:00:00',
+     '2090-12-25 23:59:59'
+);
